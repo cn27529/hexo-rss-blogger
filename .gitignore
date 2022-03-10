@@ -1,0 +1,18 @@
+# Logs
+*.log
+
+# Runtime data
+tmp
+#.fontcustom-manifest.json
+
+package-lock.json
+
+.DS_Store
+Thumbs.db
+#db.json
+*.log
+node_modules/
+public/
+.deploy*/
+dist/
+.deploy_git/
