@@ -1,4 +1,3 @@
----
 title: graylog-docker安装
 tags:
   - docker
@@ -34,104 +33,96 @@ excerpt: >-
   Huang All rights reserved.</div>
 date: 2020-08-10 15:38:00
 ---
-
 1.安装docker jdk1.8
 
 2.下载docker镜像
 
-  
-
+```bash
 docker pull mongo
 
 docker pull docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
 
 docker pull graylog/graylog:3.1
-
-  
+```
 
 3.分开启动3个组件(推荐)
 
-\# mongodb
+### mongodb
+```bash
+docker run \
 
-  
+--name mongo \
 
-docker run \\
+-p 27017:27017 \
 
-\--name mongo \\
+-v /etc/localtime:/etc/localtime:ro \
 
-\-p 27017:27017 \\
+-v mongo_data:/data/db \
 
-\-v /etc/localtime:/etc/localtime:ro \\
+-d mongo:latest
 
-\-v mongo\_data:/data/db \\
+```
 
-\-d mongo:latest
+### elasticsearch
 
-  
+```bash
+docker run \
 
-\# elasticsearch
+--name elasticsearch \
 
-  
+-p 9200:9200 -p 9300:9300 \
 
-docker run \\
+-e "http.host=0.0.0.0" \
 
-\--name elasticsearch \\
+-e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
 
-\-p 9200:9200 -p 9300:9300 \\
+-e "discovery.type=single-node" \
 
-\-e "http.host=0.0.0.0" \\
+-e http.cors.allow-origin="*" \ (设置跨域)
 
-\-e "ES\_JAVA\_OPTS=-Xms512m -Xmx512m" \\
+-e http.cors.enabled=true \
 
-\-e "discovery.type=single-node" \\
+-v /etc/localtime:/etc/localtime:ro \
 
-\-e http.cors.allow-origin="\*" \\ (设置跨域)
+-v es_data:/usr/share/elasticsearch/data \
 
-\-e http.cors.enabled=true \\
+-d docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
 
-\-v /etc/localtime:/etc/localtime:ro \\
+```
+### graylog
 
-\-v es\_data:/usr/share/elasticsearch/data \\
+```bash
+docker run \
 
-\-d docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.5
+--link mongo \
 
-  
+--link elasticsearch \
 
-\# graylog
+--name graylog \
 
-  
+-p 9000:9000 \
 
-docker run \\
+-p 12201:12201 -p 12201:12201/udp \
 
-\--link mongo \\
+-p 1514:1514 -p 1514:1514/udp -p 5044:5044 \
 
-\--link elasticsearch \\
+-e GRAYLOG_HTTP_EXTERNAL_URI=http://{改成你的主機IP}:9000/ \
 
-\--name graylog \\
+-e GRAYLOG_ROOT_TIMEZONE=Asia/Shanghai \
 
-\-p 9000:9000 \\
+-e GRAYLOG_WEB_ENDPOINT_URI="http://{改成你的主機IP}:9000/:9000/api" \
 
-\-p 12201:12201 -p 12201:12201/udp \\
+-e GRAYLOG_PASSWORD_SECRET=somepasswordpepper \
 
-\-p 1514:1514 -p 1514:1514/udp -p 5044:5044 \\
+-e GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918 \
 
-\-e GRAYLOG\_HTTP\_EXTERNAL\_URI=http://{改成你的主機IP}:9000/ \\
+-v /etc/localtime:/etc/localtime:ro \
 
-\-e GRAYLOG\_ROOT\_TIMEZONE=Asia/Shanghai \\
+-v graylog_journal:/usr/share/graylog/data/journal \
 
-\-e GRAYLOG\_WEB\_ENDPOINT\_URI="http://{改成你的主機IP}:9000/:9000/api" \\
+-d graylog/graylog:3.1
 
-\-e GRAYLOG\_PASSWORD\_SECRET=somepasswordpepper \\
-
-\-e GRAYLOG\_ROOT\_PASSWORD\_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918 \\
-
-\-v /etc/localtime:/etc/localtime:ro \\
-
-\-v graylog\_journal:/usr/share/graylog/data/journal \\
-
-\-d graylog/graylog:3.1
-
-  
+```
 
 [gist](https://gist.github.com/cn27529/312c7ce4a490e23c93299a52bcc8eec4)
 

@@ -1,8 +1,7 @@
----
 title: WebSocket+Express讓前後端一家親
 tags:
-  - Express
   - Nodejs
+  - Express
   - WebSocket
 excerpt: >-
   <p>因為不想廢話，這裡就不解釋什麼是WebSocket了XD，進入正題</p><p>這裡直接使用Github上的websockets/ws項目，它直接使用了express做為項目，所以我們也一起跟著用吧XD</p><p>連結在這
@@ -111,9 +110,9 @@ excerpt: >-
   /></p><p>參考自</p><p>https://letswrite.tw/websocket/</p><p>https://medium.com/enjoy-life-enjoy-coding/javaScript-websocket-讓前後端沒有距離</p><p><br
   /></p><div class="blogger-post-footer">Copyright © Bruce Huang All rights
   reserved.</div>
+categories: []
 date: 2020-09-28 10:16:00
 ---
-
 因為不想廢話，這裡就不解釋什麼是WebSocket了XD，進入正題
 
 這裡直接使用Github上的websockets/ws項目，它直接使用了express做為項目，所以我們也一起跟著用吧XD
@@ -123,114 +122,148 @@ date: 2020-09-28 10:16:00
 這裡我只寫我做的結果，所有的內容會放到github上，也會給上連接
 
 Server的code
+### 建立server.js
 
-const wss = new WebSocket.Server({
+```js
+//import express 和 ws 套件
+const express = require('express')
+const WebSocket = require('ws')
 
-port: WSS\_PORT
+//指定開啟的 port
+const PORT = 3000
+const WSS_PORT = 8080
 
+//創建 express 的物件，並綁定及監聽 3000 port ，且設定開啟後在 console 中提示
+const app = express()
+
+const path = require('path')
+
+const {
+    v4: uuidv4
+} = require('uuid')
+
+app.engine('.html', require('ejs').__express);
+
+// Optional since express defaults to CWD/views
+
+app.set('views', path.join(__dirname, 'views'));
+
+// Path to our public directory
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Without this you would need to
+// supply the extension to res.render()
+// ex: res.render('users.html').
+app.set('view engine', 'html')
+
+app.get('/', function(req, res) {
+    res.send('Hello WebSocket')
 });
 
-  
+// Dummy users
+var users = [{
+        name: 'tobi',
+        email: 'tobi@gmail.com'
+    },
+    {
+        name: 'loki',
+        email: 'loki@gmail.com'
+    },
+    {
+        name: 'jane',
+        email: 'jane@gmail.com'
+    }
+];
+
+app.get('/users', function(req, res) {
+    res.render('index', {
+        users: users,
+        title: "users example",
+        header: "Dummy users"
+    })
+});
+
+app.listen(PORT, () => {
+    console.log(`Express started on port ${PORT}`)
+})
+
+const wss = new WebSocket.Server({
+    port: WSS_PORT
+});
 
 wss.on('connection', function connection(ws) {
 
-ws.on('message', function incoming(message) {
+    ws.on('message', function incoming(message) {
+        console.log('client send: %s', message)
+    });
 
-console.log('client send: %s', message)
+    setInterval(() => {
 
-});
+        var uuid = uuidv4()
+        ws.send(uuid);
+        console.log('server send: %s', uuid)
 
-setInterval(() \=> {
-
-var uuid = uuidv4()
-
-ws.send(uuid);
-
-console.log('server send: %s', uuid)
-
-}, 1000)
+    }, 1000)
 
 });
-
+```
 假裝Server有一直在傳輸信息所以使用setInterval 代替 
 
   
 
 Client的code
 
-  
+```html
+<!DOCTYPE html>
+<html lang="en">
 
-<body onload\="onload()"\>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WebSockets</title>
+</head>
 
-  
+<body onload="onload()">
 
-<h1\>Hello WebSocketsh1>
+    <h1>Hello WebSockets</h1>
 
-  
+</body>
 
-body>
+<style>
+    body {
+        background-color: lightblue;
+        overflow: auto;
+    }
+</style>
 
-  
+<script>
+    function onload() {
 
-<style\>
+        let ws = new WebSocket('ws://localhost:8080')
+        ws.onopen = () => {
+            console.log('open connection')
+        }
+        ws.onclose = () => {
+            console.log('close connection')
+        }
+        ws.onmessage = event => {
+            console.log('client收到server信息')
+            console.log(event.data)
+            var msg = document.createElement('div')
+            msg.innerHTML = event.data;
+            document.querySelector('body').append(msg);
+            msg.focus();
 
-body {
+        }
 
-background-color: lightblue;
+    }
+</script>
 
-overflow: auto;
+</html>
 
-}
-
-style>
-
-  
-
-<script\>
-
-function onload() {
-
-  
-
-let ws \= new WebSocket('ws://localhost:8080')
-
-ws.onopen \= () \=> {
-
-console.log('open connection')
-
-}
-
-ws.onclose \= () \=> {
-
-console.log('close connection')
-
-}
-
-ws.onmessage \= event \=> {
-
-console.log('client收到server信息')
-
-console.log(event.data)
-
-var msg \= document.createElement('div')
-
-msg.innerHTML \= event.data;
-
-document.querySelector('body').append(msg);
-
-msg.focus();
-
-  
-
-}
-
-  
-
-}
-
-script>
-
-  
+```
 
 執行server.js查看效果
 
