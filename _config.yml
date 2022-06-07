@@ -6,7 +6,7 @@
 title: 世界因你而進步
 subtitle: blog.xispace.app
 description: 希望所分享的各種相關資訊, 大家可以從這裡可以獲得幫助。會陸續的增加內容唷~
-keywords:
+keywords: 析空間,Xispace.app,小朋友的程式,程式學習課程,互動課程教學,
 author: cn27529
 language: zh-tw
 timezone: Asia/Taipei
@@ -16,8 +16,8 @@ timezone: Asia/Taipei
 url: https://blog.xispace.app
 #permalink: :year/:month/:day/:title/
 #permalink: :year/:month/:title/
-#permalink: :category/:hash/
-permalink: :hash/
+permalink: :title/
+#permalink: :hash/
 #permalink: :category/:title/
 permalink_defaults:
   #lang: en
@@ -132,6 +132,10 @@ deploy:
 # admin deploy設定，mydeploy.sh要變更權限chmod 777 mydeploy.sh
 admin:
   deployCommand: './mydeploy.sh'
+  #設定後台登入帳密
+  username: admin
+  password_hash: $2a$10$t1VZnZX0F9NBm5eI1y61uO/TVTQH7dtEQSWe/5RqnzruDYq9i0bM6
+  secret: 1q2w3e!Q@W#E
 
 #RSS订阅
 plugin:
@@ -153,3 +157,7 @@ search:
   template: ./search.json
 
 all_minifier: false
+
+# https://segmentfault.com/a/1190000007477815
+sitemap:
+path: sitemap.xml

@@ -1,4 +1,3 @@
----
 title: EJS常用標簽
 tags:
   - ejs
@@ -88,11 +87,9 @@ excerpt: >-
   Huang All rights reserved.</div>
 date: 2018-06-13 16:52:00
 ---
-
-常用的EJS標簽XD  
-  
-
+常用的EJS標簽
 <% %>流程控制標簽  
+```js
 //例  
 <% var user.name \= 'bruce - huang' %>  
 <% if(user.name !== null) { %>  
@@ -119,7 +116,7 @@ date: 2018-06-13 16:52:00
 //例  
 <% var user.name \= 'bruce - huang 看己去試吧, 我是不知道他怎知道什麼叫沒用的空格XD' %>  
 <%= user.name \-%>  
-  
+```
 ejs中的邏輯代碼全部用JavaScript  
 
   

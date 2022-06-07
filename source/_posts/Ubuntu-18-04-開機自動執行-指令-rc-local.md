@@ -1,5 +1,4 @@
----
-title: Ubuntu 18.04 開機自動執行 指令 rc.local
+title: Ubuntu 18.04 開機後自動執行 rc.local
 tags:
   - Glances
   - Ubuntu
@@ -102,94 +101,66 @@ excerpt: >-
   class="blogger-post-footer">Copyright © Bruce Huang All rights reserved.</div>
 date: 2020-08-10 10:18:00
 ---
-
 1.sudo su 切換到root權限
 
-2.以root身分, 進入lib/systemd/system/ 查看是否有rc.local.service檔案, 一般都會有啦XD
+2.以root身分進入
+```bash
+lib/systemd/system/ 
+```
+查看是否有rc.local.service檔案, 一般都會有啦
+若沒有檔案就走2-1
 
-若沒有就走2-1
+2-1
 
-2-1.nano lib/systemd/system/rc.local.service
-
-文件最後加上
-
+```bash
+nano lib/systemd/system/rc.local.service
+#文件最後加上
 \[Install\]
-
 WantedBy=multi-user.target
-
 Alias=rc.local.service
+```
 
-  
-
-存檔
+然後存檔，離開
 
 3.建立 rc.local 檔
 
+```bash
 cd /etc
-
 sudo touch rc.local
-
-  
-
 nano rc.local
+```
 
-文件內容如下
+開啟rc.local的文件後，填入內容如下：
 
+```bash
 #!/bin/sh -e
-
 #
-
-\# rc.local
-
+# rc.local
 #
-
-\# This script is executed at the end of each multiuser runlevel.
-
-\# Make sure that the script will “exit 0” on success or any other
-
-\# value on error.
-
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will “exit 0” on success or any other
+# value on error.
 #
-
-\# In order to enable or disable this script just change the execution
-
-\# bits.
-
+# In order to enable or disable this script just change the execution
+# bits.
 #
-
-\# By default this script does nothing.
-
-  
-
+# By default this script does nothing.
 #每次啟動自動執行Glances 命令列系統監控工具
-
 glances -w
-
-  
-
 exit 0
-
-  
-
-  
-
-  
+```  
 
 4.rc.local 變更執行權限
-
+```bash
 sudo chmod +R 777 /etc/rc.local
-
-  
+```
 
 5.啟用服務
-
+```bash
 sudo systemctl enable rc-local.service
+```
 
-  
-
-6.重開機如果有自動glances -w就是成功囉！
-
-  
+6.重開機，如果有自動執行glances -w指令就是成功囉！
 
 [gist](https://gist.github.com/cn27529/58e6d84550819740eac1dfe568ef9c09)
 
